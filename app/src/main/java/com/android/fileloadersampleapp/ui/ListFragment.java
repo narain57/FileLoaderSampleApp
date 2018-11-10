@@ -39,7 +39,7 @@ import java.util.List;
 public class ListFragment extends Fragment implements MainView {
 
     private RecyclerViewAdapter mAdapter;
-    private ProfilePresenter presenter;
+    public ProfilePresenter presenter;
     private ArrayList<Profile> profileList;
     private ProgressBar progressBar;
     private View v;
