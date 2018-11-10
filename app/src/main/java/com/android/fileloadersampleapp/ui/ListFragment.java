@@ -1,11 +1,14 @@
 package com.android.fileloadersampleapp.ui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +21,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.fileloadersampleapp.R;
@@ -48,7 +52,20 @@ public class ListFragment extends Fragment implements MainView {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.list_layout, container, false);
+        showSnackBar();
         return v;
+    }
+
+    private void showSnackBar() {
+        CoordinatorLayout rootlayout = (CoordinatorLayout) v.findViewById(R.id.rootLayout);
+
+        Snackbar snackbar = Snackbar
+                .make(rootlayout, "Click on FAB button to load JSON/PDF files", Snackbar.LENGTH_LONG);
+        snackbar.setActionTextColor(Color.RED);
+        View sbView = snackbar.getView();
+        TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.YELLOW);
+        snackbar.show();
     }
 
     @Override

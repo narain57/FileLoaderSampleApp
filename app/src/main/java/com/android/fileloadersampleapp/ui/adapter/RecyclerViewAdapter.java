@@ -15,6 +15,7 @@ import com.android.fileloadersampleapp.R;
 import com.android.fileloadersampleapp.model.Profile;
 import com.android.fileloadersampleapp.ui.OnLoadMoreListener;
 import com.android.imageloader.builder.FileLoaderBuilder;
+import com.android.imageloader.callback.FutureCallBack;
 import com.android.imageloader.loader.MyFileLoader;
 import com.android.imageloader.utils.FileType;
 
@@ -46,6 +47,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             id = view.findViewById(R.id.id);
             image =  view.findViewById(R.id.image);
             cancel = view.findViewById(R.id.cancel);
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loader.cancel(profileList.get(getAdapterPosition()).getUser().getImageUrl().getImage());
+                    cancel.setVisibility(View.INVISIBLE);
+                }
+            });
         }
     }
 
@@ -104,7 +112,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof MyViewHolder) {
-            MyViewHolder myViewHolder = (MyViewHolder) holder;
+            final MyViewHolder myViewHolder = (MyViewHolder) holder;
             final Profile profile = profileList.get(position);
             myViewHolder.name.setText(profile.getUser().getUsername());
             myViewHolder.id.setText(profile.getUser().getId());
@@ -112,11 +120,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 loader = new FileLoaderBuilder().setCacheLimit(Runtime.getRuntime().maxMemory() / 4).
                         setContext(context).build();
             }
-            loader.load(FileType.IMAGE,profile.getUser().getImageUrl().getImage(),myViewHolder.image,null);
-            myViewHolder.cancel.setOnClickListener(new View.OnClickListener() {
+            loader.load(FileType.IMAGE, profile.getUser().getImageUrl().getImage(), myViewHolder.image, new FutureCallBack<Object>() {
                 @Override
-                public void onClick(View v) {
-                    loader.cancel(profile.getUser().getImageUrl().getImage());
+                public void onCompleted(Object o) {
+                    myViewHolder.cancel.setVisibility(View.INVISIBLE);
                 }
             });
         } else if (holder instanceof LoadingViewHolder) {

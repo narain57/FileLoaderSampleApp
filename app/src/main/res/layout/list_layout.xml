@@ -29,5 +29,12 @@
         android:layout_alignParentEnd="true"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"/>
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rootLayout"
+        android:layout_alignParentBottom="true">
+
+    </android.support.design.widget.CoordinatorLayout>
 
 </RelativeLayout>
