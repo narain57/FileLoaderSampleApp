@@ -1,7 +1,9 @@
 package com.android.fileloadersampleapp.ui;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -32,6 +34,11 @@ import com.android.fileloadersampleapp.presenter.ProfilePresenterImpl;
 import com.android.fileloadersampleapp.ui.adapter.RecyclerViewAdapter;
 import com.android.fileloadersampleapp.utility.Utility;
 import com.android.fileloadersampleapp.view.MainView;
+import com.android.imageloader.builder.FileLoaderBuilder;
+import com.android.imageloader.callback.FutureCallBack;
+import com.android.imageloader.loader.MyFileLoader;
+import com.android.imageloader.utils.FileType;
+import com.android.imageloader.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +54,6 @@ public class ListFragment extends Fragment implements MainView {
     SwipeRefreshLayout mSwipeRefreshLayout;
     int index =0,end =10;
     private List<Profile> subList;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -72,8 +78,19 @@ public class ListFragment extends Fragment implements MainView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initProgressBar();
-        presenter = new ProfilePresenterImpl(this,new ProfileInteractorImpl());
-        presenter.fetchProfileDetails();
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (Utils.isWriteStorageAllowed(getActivity())) {
+                presenter = new ProfilePresenterImpl(this,new ProfileInteractorImpl());
+                presenter.fetchProfileDetails();
+            } else {
+                Utils.requestStoragePermission(getActivity(), this);
+            }
+        } else {
+            if (Utils.isWriteStorageAllowed(getActivity())) {
+                presenter = new ProfilePresenterImpl(this,new ProfileInteractorImpl());
+                presenter.fetchProfileDetails();
+            }
+        }
     }
 
     @Override
@@ -177,5 +194,29 @@ public class ListFragment extends Fragment implements MainView {
         progressBar.setVisibility(View.INVISIBLE);
 
         getActivity().addContentView(relativeLayout, params);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        //Checking the request code of our request
+        if (requestCode == Utils.SAVE_STORAGE_PERMISSION_CODE) {
+            //If permission is granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                presenter = new ProfilePresenterImpl(this,new ProfileInteractorImpl());
+                presenter.fetchProfileDetails();
+            } else {
+                // user rejected the permission
+                boolean showRationale = shouldShowRequestPermissionRationale(permissions[0]);
+                if (!showRationale) {
+                    // CHECKED "never ask again"
+                    Toast.makeText(getActivity(),"Storage permisssion has been denied,Please provide permission to proceed.", Toast.LENGTH_LONG).show();
+                    getActivity().finish();
+                }else {
+                    Toast.makeText(getActivity(), "Storage permisssion has been denied,Please provide permission to proceed.", Toast.LENGTH_LONG).show();
+                    Utils.requestStoragePermission(getActivity(), this);
+                }
+            }
+        }
     }
 }

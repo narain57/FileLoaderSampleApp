@@ -1,7 +1,13 @@
 package com.android.imageloader.utils;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -23,6 +29,7 @@ import java.util.Map;
 
 public class Utils {
     public static int stub_id = R.drawable.ic_launcher_background;
+    public static final int SAVE_STORAGE_PERMISSION_CODE = 1;
 
     public static void CopyStream(InputStream is, OutputStream os)
     {
@@ -74,5 +81,23 @@ public class Utils {
             return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
         } catch (FileNotFoundException e) {}
         return null;
+    }
+
+    public static boolean isWriteStorageAllowed(Activity activity) {
+        //Getting the permission status
+        int result = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        //If permission is granted returning true
+        if (result == PackageManager.PERMISSION_GRANTED)
+            return true;
+        //If permission is not granted returning false
+        return false;
+    }
+
+    //Requesting permission
+    public static void requestStoragePermission(Activity activity, Fragment fragment) {
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        }
+        fragment.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},SAVE_STORAGE_PERMISSION_CODE);
     }
 }
