@@ -51,7 +51,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     loader.cancel(profileList.get(getAdapterPosition()).getUser().getImageUrl().getImage());
-                    cancel.setVisibility(View.INVISIBLE);
+                    cancel.setVisibility(View.GONE);
                 }
             });
         }
@@ -123,7 +123,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             loader.load(FileType.IMAGE, profile.getUser().getImageUrl().getImage(), myViewHolder.image, new FutureCallBack<Object>() {
                 @Override
                 public void onCompleted(Object o) {
-                    myViewHolder.cancel.setVisibility(View.INVISIBLE);
+                    myViewHolder.cancel.setVisibility(View.GONE);
                 }
             });
         } else if (holder instanceof LoadingViewHolder) {
